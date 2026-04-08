@@ -43,6 +43,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json) // ** ADDED for Navigation **
             implementation(libs.androidx.navigation.compose) // ** ADDED for Navigation **
             implementation(libs.kotlinx.datetime) // ** ADDED **
+            implementation(libs.androidx.room.runtime) // ** ADDED for Room **
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

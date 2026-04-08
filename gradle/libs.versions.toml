@@ -16,8 +16,11 @@ material3 = "1.10.0-alpha05"
 kotlinx-datetime = "0.7.1"  # ** ADDED **
 androidx-navigation = "2.9.2" # ** ADDED for Navigation **
 kotlinxSerializationJson = "1.10.0" # ** ADDED for Navigation **
+roomKtx = "2.8.4"
 
 [libraries]
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomKtx" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
