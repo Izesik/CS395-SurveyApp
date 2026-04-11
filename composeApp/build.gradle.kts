@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.androidx.navigation.compose) // ** ADDED for Navigation **
             implementation(libs.kotlinx.datetime) // ** ADDED **
             implementation(libs.androidx.room.runtime) // ** ADDED for Room **
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

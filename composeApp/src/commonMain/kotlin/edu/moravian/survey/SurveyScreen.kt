@@ -8,12 +8,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.unit.dp
+import edu.moravian.survey.data.SurveyDao
+import edu.moravian.survey.data.SurveyDatabase
+import edu.moravian.survey.data.save
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
+import surveytaker.composeapp.generated.resources.Res
+import surveytaker.composeapp.generated.resources.submit
 
 /**
  * The destination for the survey screen that can be filled out.
@@ -24,12 +39,14 @@ data object SurveyScreen
 /**
  * Displays the survey screen, which consists of a column with the survey view and a submit button.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SurveyScreen(
+    surveyDatabase: SurveyDatabase,
     onCompleted: () -> Unit,
 ) {
-    // TODO: complete (may need to add parameter(s))
     val scope = rememberCoroutineScope()
+    var currentSurvey by remember { mutableStateOf(AMISOS_R_SURVEY) }
 
     Column(
         modifier = Modifier
@@ -37,7 +54,22 @@ fun SurveyScreen(
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        // TODO: complete
+        SurveyView(
+            survey = AMISOS_R_SURVEY,
+            showErrors = false,
+            onAnswer = { updatedSurvey -> currentSurvey = updatedSurvey }
+        )
+        Button (
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            onClick = {
+                scope.launch {
+                    currentSurvey.questions.save(surveyDatabase.surveyDao())
+                    onCompleted()
+                }
+            }
+        ) {
+            Text(stringResource(Res.string.submit))
+        }
     }
 }
 

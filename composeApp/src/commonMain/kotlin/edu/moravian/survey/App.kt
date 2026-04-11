@@ -10,7 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
@@ -18,6 +22,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import edu.moravian.survey.data.SurveyDao
+import edu.moravian.survey.data.SurveyDatabase
+import edu.moravian.survey.data.SurveyWithQuestions
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import surveytaker.composeapp.generated.resources.*
@@ -26,8 +33,7 @@ import surveytaker.composeapp.generated.resources.*
  * The main app composable. Sets up the navigation graph and top app bar.
  */
 @Composable
-fun App() {
-    // TODO: complete (may need to add parameter(s))
+fun App(surveyDatabase: SurveyDatabase) {
     val navController = rememberNavController()
     MaterialTheme {
         Scaffold(
@@ -51,11 +57,20 @@ fun App() {
                         onOpenHistory = { navController.navigate(HistoryScreen) },
                     )
                 }
-                composable<SurveyScreen> { SurveyScreen { navController.navigateUp() } }
+                composable<SurveyScreen> {
+                    SurveyScreen(surveyDatabase) { navController.navigateUp() }
+                }
                 composable<HistoryScreen> {
-                    HistoryScreen { surveyId ->
-                        navController.navigate(ViewSurveyScreenDest(surveyId))
+                    var historyEntries by remember { mutableStateOf<List<SurveyWithQuestions>>(emptyList()) }
+                    LaunchedEffect(Unit) {
+                        historyEntries = surveyDatabase.surveyDao().getAllSurveys()
                     }
+                    HistoryScreen(
+                        entries = historyEntries,
+                        onOpenSurvey = { surveyId ->
+                            navController.navigate(ViewSurveyScreenDest(surveyId))
+                        },
+                    )
                 }
                 composable<ViewSurveyScreenDest> { navBackStackEntry ->
                     val surveyId = navBackStackEntry.toRoute<ViewSurveyScreenDest>().surveyId
