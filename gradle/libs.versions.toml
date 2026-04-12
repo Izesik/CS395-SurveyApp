@@ -18,6 +18,7 @@ androidx-navigation = "2.9.2" # ** ADDED for Navigation **
 kotlinxSerializationJson = "1.10.0" # ** ADDED for Navigation **
 roomKtx = "2.8.4"
 sqlite = "2.6.2" # ** ADDED for Room database
+ksp = "2.3.6" # ** ADDED for Room database
 
 [libraries]
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomKtx" }
@@ -52,3 +53,4 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" } # ** ADDED for Navigation **
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

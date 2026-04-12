@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization) // ** ADDED for Navigation **
+    alias(libs.plugins.ksp) // ** ADDED for Room **
 }
 
 kotlin {
@@ -54,6 +55,7 @@ kotlin {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+    ksp(libs.androidx.room.compiler)
 }
 
 android {

@@ -54,8 +54,8 @@ fun HistoryScreen(
             items(entries, key = { it.survey.id }) { result ->
                 Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurvey(result.survey.id) }) {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        Text(stringResource(Res.string.date) + formatEpochMillis(result.survey.dateTime))
-                        Text(stringResource(Res.string.score) + result.survey.score)
+                        Text(stringResource(Res.string.date, formatEpochMillis(result.survey.dateTime)))
+                        Text(stringResource(Res.string.score, result.survey.score))
                     }
                 }
             }

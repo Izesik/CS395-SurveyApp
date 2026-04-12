@@ -51,6 +51,7 @@ fun HomeScreen(
 @Composable
 private fun StatusText() {
     val now = currentTimeMillis()
+    
     // TODO: complete (may need to add parameter(s))
     // NOTES:
     // 1. Report if no surveys taken yet
