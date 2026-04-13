@@ -53,7 +53,25 @@ suspend fun SurveyQuestions.save(dao: SurveyDao) {
 /**
  * Loads the survey result with the given ID from the repository and maps it back to a Survey.
  */
-suspend fun Survey.load(surveyId: Long): Survey {
-    // TODO: complete (may need to add parameter(s))
-    return this
+suspend fun Survey.load(surveyId: Long, dao: SurveyDao): Survey {
+    val result = dao.getSurveyById(surveyId) ?: return this
+    var survey = this
+    for (questionResult in result.questionResults) {
+        val element = survey[questionResult.questionId] ?: continue
+        val updated: Question<*>? = when (element) {
+            is QuestionWithSingleOption ->
+                questionResult.answerInt?.let { element.copy(answer = it) }
+            is QuestionWithMultiOptions ->
+                questionResult.answerSet?.let { element.copy(answer = it) }
+            is QuestionWithMultiOptionsAndOther ->
+                questionResult.answerSet?.let {
+                    element.copy(answer = Pair(it, questionResult.answerString ?: ""))
+                }
+            else -> null
+        }
+        if (updated != null) {
+            survey = survey.update(updated)
+        }
+    }
+    return survey
 }

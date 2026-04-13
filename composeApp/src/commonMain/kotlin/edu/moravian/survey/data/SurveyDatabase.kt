@@ -38,6 +38,7 @@ expect object SurveyDatabaseConstructor : RoomDatabaseConstructor<SurveyDatabase
 fun getSurveyDatabase(
     builder: androidx.room.RoomDatabase.Builder<SurveyDatabase>,
 ): SurveyDatabase = builder
+    .fallbackToDestructiveMigration(true)
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()

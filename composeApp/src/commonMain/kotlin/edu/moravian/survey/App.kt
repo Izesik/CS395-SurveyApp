@@ -73,7 +73,7 @@ fun App(surveyDatabase: SurveyDatabase) {
                 }
                 composable<ViewSurveyScreenDest> { navBackStackEntry ->
                     val surveyId = navBackStackEntry.toRoute<ViewSurveyScreenDest>().surveyId
-                    ViewSurveyScreen(surveyId)
+                    ViewSurveyScreen(surveyId, surveyDatabase.surveyDao())
                 }
             }
         }
