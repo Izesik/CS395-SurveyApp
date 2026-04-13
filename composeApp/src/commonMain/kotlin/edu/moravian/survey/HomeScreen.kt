@@ -13,6 +13,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import edu.moravian.survey.data.SurveyWithQuestions
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import surveytaker.composeapp.generated.resources.*
@@ -30,10 +31,10 @@ data object HomeScreen
  */
 @Composable
 fun HomeScreen(
+    recentSurvey: SurveyWithQuestions?,
     onTakeSurvey: () -> Unit,
     onOpenHistory: () -> Unit,
 ) {
-    // TODO: complete (may need to add parameter(s))
     Column(
         modifier = Modifier
             .safeContentPadding()
@@ -41,7 +42,7 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        StatusText()
+        StatusText(recentSurvey)
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = onTakeSurvey) { Text(stringResource(Res.string.take_survey)) }
         TextButton(onClick = onOpenHistory) { Text(stringResource(Res.string.view_history)) }
@@ -49,12 +50,18 @@ fun HomeScreen(
 }
 
 @Composable
-private fun StatusText() {
+private fun StatusText(recentSurvey: SurveyWithQuestions?) {
     val now = currentTimeMillis()
 
-    // TODO: complete (may need to add parameter(s))
-    // NOTES:
-    // 1. Report if no surveys taken yet
-    // 2. Show reminder messages using reminderMessage()
-    // 3. Times can be displayed with formatEpochMillis()
+    if (recentSurvey == null) {
+        Text(stringResource(Res.string.no_survey_results_yet))
+        return
+    }
+
+    Text(stringResource(Res.string.last_completed, formatEpochMillis(recentSurvey.survey.dateTime)))
+    Text(stringResource(Res.string.last_score, recentSurvey.survey.score))
+
+    reminderMessage(now, recentSurvey.survey.dateTime)?.let { message ->
+        Text(stringResource(message))
+    }
 }

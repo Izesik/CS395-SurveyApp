@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import edu.moravian.survey.data.SurveyDao
+import edu.moravian.survey.data.SurveyWithQuestions
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import surveytaker.composeapp.generated.resources.*
@@ -39,9 +40,11 @@ fun ViewSurveyScreen(
     dao: SurveyDao,
 ) {
     var loading by remember { mutableStateOf(true) }
+    var surveyResult by remember { mutableStateOf<SurveyWithQuestions?>(null) }
     var survey by remember { mutableStateOf(AMISOS_R_SURVEY) }
     LaunchedEffect(surveyId) {
-        survey = AMISOS_R_SURVEY.load(surveyId, dao)
+        surveyResult = dao.getSurveyById(surveyId)
+        survey = surveyResult?.let { AMISOS_R_SURVEY.load(it) } ?: AMISOS_R_SURVEY
         loading = false
     }
 
@@ -59,7 +62,10 @@ fun ViewSurveyScreen(
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        // TODO: complete
+        surveyResult?.let { result ->
+            Text(stringResource(Res.string.survey_results_from, formatEpochMillis(result.survey.dateTime)))
+            Text(stringResource(Res.string.score, result.survey.score))
+        }
         SurveyView(survey, false, null)
     }
 }

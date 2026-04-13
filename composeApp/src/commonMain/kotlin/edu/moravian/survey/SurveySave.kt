@@ -3,6 +3,7 @@ package edu.moravian.survey
 import edu.moravian.survey.data.QuestionResultEntity
 import edu.moravian.survey.data.SurveyDao
 import edu.moravian.survey.data.SurveyEntity
+import edu.moravian.survey.data.SurveyWithQuestions
 
 /**
  * Saves the current survey result to the repository. This should be called when the user completes
@@ -55,6 +56,10 @@ suspend fun SurveyQuestions.save(dao: SurveyDao) {
  */
 suspend fun Survey.load(surveyId: Long, dao: SurveyDao): Survey {
     val result = dao.getSurveyById(surveyId) ?: return this
+    return load(result)
+}
+
+fun Survey.load(result: SurveyWithQuestions): Survey {
     var survey = this
     for (questionResult in result.questionResults) {
         val element = survey[questionResult.questionId] ?: continue
