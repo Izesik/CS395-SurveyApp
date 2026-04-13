@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization) // ** ADDED for Navigation **
     alias(libs.plugins.ksp) // ** ADDED for Room **
+    id("androidx.room") version "2.8.4"
 }
 
 kotlin {
@@ -91,5 +92,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 }

@@ -22,7 +22,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import edu.moravian.survey.data.SurveyDao
 import edu.moravian.survey.data.SurveyDatabase
 import edu.moravian.survey.data.SurveyWithQuestions
 import org.jetbrains.compose.resources.painterResource

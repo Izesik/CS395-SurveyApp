@@ -19,11 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.unit.dp
-import edu.moravian.survey.data.SurveyDao
 import edu.moravian.survey.data.SurveyDatabase
-import edu.moravian.survey.data.save
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
@@ -57,16 +54,16 @@ fun SurveyScreen(
         SurveyView(
             survey = AMISOS_R_SURVEY,
             showErrors = false,
-            onAnswer = { updatedSurvey -> currentSurvey = updatedSurvey }
+            onAnswer = { updatedSurvey -> currentSurvey = updatedSurvey },
         )
-        Button (
+        Button(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             onClick = {
                 scope.launch {
                     currentSurvey.questions.save(surveyDatabase.surveyDao())
                     onCompleted()
                 }
-            }
+            },
         ) {
             Text(stringResource(Res.string.submit))
         }

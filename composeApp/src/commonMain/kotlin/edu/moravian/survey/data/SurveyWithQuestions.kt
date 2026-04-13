@@ -10,10 +10,9 @@ import androidx.room.Relation
 data class SurveyWithQuestions(
     @Embedded
     val survey: SurveyEntity,
-
     @Relation(
         parentColumn = "id",
-        entityColumn = "surveyId"
+        entityColumn = "surveyId",
     )
-    val questionResults: List<QuestionResultEntity>
+    val questionResults: List<QuestionResultEntity>,
 )
