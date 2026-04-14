@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SurveyDao {
@@ -47,7 +48,7 @@ interface SurveyDao {
      */
     @Transaction
     @Query("SELECT * FROM SurveyEntity ORDER BY dateTime DESC LIMIT 1")
-    suspend fun getRecentSurvey(): SurveyWithQuestions?
+    fun getRecentSurvey(): Flow<SurveyWithQuestions?>
 
     /**
      * Retrieves a specific survey by its ID from the database, along with its associated questions, or null

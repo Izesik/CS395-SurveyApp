@@ -11,9 +11,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import edu.moravian.survey.data.SurveyWithQuestions
+import edu.moravian.survey.data.SurveyDatabase
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import surveytaker.composeapp.generated.resources.*
@@ -31,7 +33,7 @@ data object HomeScreen
  */
 @Composable
 fun HomeScreen(
-    recentSurvey: SurveyWithQuestions?,
+    database: SurveyDatabase,
     onTakeSurvey: () -> Unit,
     onOpenHistory: () -> Unit,
 ) {
@@ -42,7 +44,7 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        StatusText(recentSurvey)
+        StatusText(database)
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = onTakeSurvey) { Text(stringResource(Res.string.take_survey)) }
         TextButton(onClick = onOpenHistory) { Text(stringResource(Res.string.view_history)) }
@@ -50,18 +52,22 @@ fun HomeScreen(
 }
 
 @Composable
-private fun StatusText(recentSurvey: SurveyWithQuestions?) {
+private fun StatusText(database: SurveyDatabase) {
     val now = currentTimeMillis()
+    val recentSurvey by database.surveyDao().getRecentSurvey().collectAsState(initial = null)
 
     if (recentSurvey == null) {
         Text(stringResource(Res.string.no_survey_results_yet))
         return
     }
 
-    Text(stringResource(Res.string.last_completed, formatEpochMillis(recentSurvey.survey.dateTime)))
-    Text(stringResource(Res.string.last_score, recentSurvey.survey.score))
+    val lastTaken = recentSurvey!!.survey.dateTime
+    Text(stringResource(Res.string.last_completed, formatEpochMillis(lastTaken)))
+    Text(stringResource(Res.string.last_score, recentSurvey!!.survey.score))
 
-    reminderMessage(now, recentSurvey.survey.dateTime)?.let { message ->
-        Text(stringResource(message))
+    reminderMessage(now, lastTaken)?.let { message ->
+        Text(
+            text = stringResource(message),
+        )
     }
 }

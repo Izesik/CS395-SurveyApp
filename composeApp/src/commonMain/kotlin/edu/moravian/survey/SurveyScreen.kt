@@ -13,18 +13,17 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import edu.moravian.survey.data.SurveyDatabase
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import surveytaker.composeapp.generated.resources.Res
+import surveytaker.composeapp.generated.resources.answer_all
 import surveytaker.composeapp.generated.resources.submit
 
 /**
@@ -39,11 +38,11 @@ data object SurveyScreen
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SurveyScreen(
-    surveyDatabase: SurveyDatabase,
+    viewModel: SurveyViewModel,
     onCompleted: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-    var currentSurvey by remember { mutableStateOf(AMISOS_R_SURVEY) }
+    val currentSurvey by viewModel.currentSurvey.collectAsState()
+    var showErrors by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -52,16 +51,27 @@ fun SurveyScreen(
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         SurveyView(
-            survey = AMISOS_R_SURVEY,
-            showErrors = false,
-            onAnswer = { updatedSurvey -> currentSurvey = updatedSurvey },
+            survey = currentSurvey,
+            showErrors = showErrors,
+            onAnswer = { updatedSurvey ->
+                viewModel.updateSurvey(updatedSurvey)
+            },
         )
+        // Show an error message if the user tries to submit without completing the survey
+        if (showErrors) {
+            Text(
+                stringResource(Res.string.answer_all),
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
         Button(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             onClick = {
-                scope.launch {
-                    currentSurvey.questions.save(surveyDatabase.surveyDao())
-                    onCompleted()
+                val isComplete = viewModel.isSurveyComplete()
+                if (isComplete) {
+                    viewModel.submitSurvey(onCompleted)
+                } else {
+                    showErrors = true
                 }
             },
         ) {

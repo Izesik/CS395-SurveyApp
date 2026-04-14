@@ -14,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -25,7 +24,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import edu.moravian.survey.data.SurveyDatabase
 import edu.moravian.survey.data.SurveyWithQuestions
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import surveytaker.composeapp.generated.resources.*
@@ -36,13 +34,7 @@ import surveytaker.composeapp.generated.resources.*
 @Composable
 fun App(surveyDatabase: SurveyDatabase) {
     val navController = rememberNavController()
-    val scope = rememberCoroutineScope()
-    var recentSurvey by remember { mutableStateOf<SurveyWithQuestions?>(null) }
-
-    LaunchedEffect(Unit) {
-        recentSurvey = surveyDatabase.surveyDao().getRecentSurvey()
-    }
-
+    val surveyViewModel = remember { SurveyViewModel(surveyDatabase) }
     MaterialTheme {
         Scaffold(
             topBar = {
@@ -61,18 +53,13 @@ fun App(surveyDatabase: SurveyDatabase) {
             ) {
                 composable<HomeScreen> {
                     HomeScreen(
-                        recentSurvey = recentSurvey,
                         onTakeSurvey = { navController.navigate(SurveyScreen) },
                         onOpenHistory = { navController.navigate(HistoryScreen) },
+                        database = surveyDatabase,
                     )
                 }
                 composable<SurveyScreen> {
-                    SurveyScreen(surveyDatabase) {
-                        scope.launch {
-                            recentSurvey = surveyDatabase.surveyDao().getRecentSurvey()
-                            navController.navigateUp()
-                        }
-                    }
+                    SurveyScreen(surveyViewModel) { navController.navigateUp() }
                 }
                 composable<HistoryScreen> {
                     var historyEntries by remember { mutableStateOf<List<SurveyWithQuestions>>(emptyList()) }
