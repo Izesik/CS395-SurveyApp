@@ -19,19 +19,18 @@ class SurveyViewModel(
         startNewSurvey()
     }
 
+    // Checks whether there is a recent survey in the database.
     private fun startNewSurvey() {
         viewModelScope.launch {
             val dao = surveyDatabase.surveyDao()
             val recentDbEntry = dao.getAllSurveys().firstOrNull()
 
             val freshSurvey = if (recentDbEntry != null) {
-                // Load the old survey state using your built-in load() function
+                // Load the old survey state
                 val oldSurvey = AMISOS_R_SURVEY.load(recentDbEntry.survey.id, dao)
-
-                // Define exactly which question IDs we want to carry over
                 val idsToKeep = setOf("sounds", "emotions")
 
-                // Map over the blank template. If the ID is in our list, swap it!
+                // Map over the blank template. If the ID is in our list, swap it
                 AMISOS_R_SURVEY.map { blankElement ->
                     if (blankElement.id in idsToKeep) {
                         oldSurvey[blankElement.id] ?: blankElement
